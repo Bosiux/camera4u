@@ -73,11 +73,12 @@ body{{background:radial-gradient(520px 380px at 78% 50%,rgba(228,195,108,.22),rg
 .icon svg{{width:96px;height:96px;display:block}}
 h1{{font-weight:800;font-size:64px;letter-spacing:-1.5px;line-height:1;font-variation-settings:'opsz' 144}}
 p{{font-weight:500;font-size:28px;color:#E4C36C;margin-top:16px;line-height:1.25}}
-.tiles{{position:absolute;right:48px;top:50%;transform:translateY(-50%) rotate(-4deg);display:flex;gap:18px}}
-.tile{{width:150px;height:330px;border-radius:22px;overflow:hidden;border:3px solid rgba(228,195,108,.55);
-  box-shadow:0 20px 50px rgba(0,0,0,.55)}}
-.tile:nth-child(2){{margin-top:-30px}}
-.tile img{{width:360px;margin-left:-105px;margin-top:-178px}}
+.tiles{{position:absolute;right:44px;top:50%;transform:translateY(-50%) rotate(-4deg);display:flex;gap:20px;align-items:center}}
+/* Whole app screenshots in small phone frames, at the screenshots' own aspect ratio. */
+.tile{{width:160px;aspect-ratio:1280/2856;padding:6px;border-radius:26px;background:#0b0a07;
+  border:2px solid rgba(228,195,108,.45);box-shadow:0 20px 50px rgba(0,0,0,.55)}}
+.tile:nth-child(2){{margin-top:-40px}}
+.tile img{{display:block;width:100%;height:100%;object-fit:cover;border-radius:20px}}
 </style></head><body><div class="text"><div class="icon">{icon_svg()}</div><h1>Film Camera</h1>
 <p>Classic film looks,<br>live in your viewfinder.</p></div><div class="tiles">{tiles}</div></body></html>"""
 
