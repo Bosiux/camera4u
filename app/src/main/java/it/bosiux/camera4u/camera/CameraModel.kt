@@ -130,6 +130,7 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
     }
 
     val renderer = FilmGlThread()
+    val pro = ProControls()
 
     private var provider: ProcessCameraProvider? = null
     private var camera: Camera? = null
@@ -320,11 +321,13 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
         zoomRatio = 1f.coerceIn(minZoom, maxZoom)
         camera.cameraControl.setZoomRatio(zoomRatio)
         status = Status.Running
+        pro.bind(camera)
     }
 
     // MARK: - Controls
 
     fun cycleFlash() {
+        if (pro.manualExposure) return
         val modes = FlashMode.entries
         flashMode = modes[(flashMode.ordinal + 1) % modes.size]
         imageCapture?.flashMode = flashMode.cameraX
@@ -356,6 +359,7 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
 
     /** Focus and meter at a point in normalized viewfinder coordinates (0..1, top-left origin). */
     fun focus(x: Float, y: Float, previewWidth: Float, previewHeight: Float) {
+        if (pro.manualFocus) return
         val camera = camera ?: return
         val frame = renderer.latestFrameSize ?: return
 
@@ -372,6 +376,14 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
         camera.cameraControl.startFocusAndMetering(
             FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF or FocusMeteringAction.FLAG_AE).build(),
         )
+    }
+
+    /** Long press: focus and meter at the point, then hold exposure and white balance there. */
+    fun lockAt(x: Float, y: Float, previewWidth: Float, previewHeight: Float) {
+        if (pro.locked) { pro.locked = false; pro.apply(); camera?.cameraControl?.cancelFocusAndMetering(); return }
+        focus(x, y, previewWidth, previewHeight)
+        pro.locked = true
+        pro.apply()
     }
 
     // MARK: - Capture

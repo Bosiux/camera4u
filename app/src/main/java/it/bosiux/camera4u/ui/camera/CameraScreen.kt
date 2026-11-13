@@ -189,6 +189,7 @@ fun CameraScreen(viewModel: FilmCameraViewModel, initialSheet: String? = null) {
                         .weight(1f)
                         .padding(horizontal = 12.dp),
                 )
+                ProBar(pro = camera.pro)
                 LookStrip(viewModel = viewModel, onBrowse = { showsLibrary = true })
                 BottomBar(camera = camera, modifier = Modifier.padding(horizontal = 28.dp).padding(bottom = 8.dp))
             }
@@ -232,7 +233,7 @@ private fun TopBar(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (camera.deviceInfo?.hasFlash == true) {
+        if (camera.deviceInfo?.hasFlash == true && !camera.pro.manualExposure) {
             val icon = when (camera.flashMode) {
                 CameraModel.FlashMode.Off -> Icons.Outlined.FlashOff
                 CameraModel.FlashMode.Auto -> Icons.Outlined.FlashAuto

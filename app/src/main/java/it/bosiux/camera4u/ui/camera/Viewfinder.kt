@@ -115,12 +115,20 @@ fun Viewfinder(camera: CameraModel, filmName: String, onFilmTap: () -> Unit, mod
                 Modifier
                     .fillMaxSize()
                     .pointerInput(Unit) {
-                        detectTapGestures { offset ->
-                            val point = Offset(offset.x / width, offset.y / height)
-                            camera.focus(point.x, point.y, width, height)
-                            focusPoint = point
-                            focusId++
-                        }
+                        detectTapGestures(
+                            onTap = { offset ->
+                                val point = Offset(offset.x / width, offset.y / height)
+                                camera.focus(point.x, point.y, width, height)
+                                focusPoint = point
+                                focusId++
+                            },
+                            onLongPress = { offset ->
+                                val point = Offset(offset.x / width, offset.y / height)
+                                camera.lockAt(point.x, point.y, width, height)
+                                focusPoint = point
+                                focusId++
+                            },
+                        )
                     }
                     .pointerInput(Unit) {
                         detectTransformGestures { _, _, zoom, _ ->
