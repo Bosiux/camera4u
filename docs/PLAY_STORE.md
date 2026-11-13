@@ -78,7 +78,7 @@ Debug builds accept launch extras that feed the bundled sample scene (`src/debug
 adb shell settings put global sysui_demo_allowed 1
 adb shell am broadcast -a com.android.systemui.demo -e command enter
 adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
-adb shell "am start -n io.github.yahiaangelo.filmcamera/.MainActivity \
+adb shell "am start -n it.bosiux.camera4u/.MainActivity \
   --ez sampleScene true --es film 'luts/bw/kodak_tri-x_400.cube' \
   --es adjustments '{\"grain\":0.45}' --es sheet adjustments"
 adb exec-out screencap -p > raw/2-bw.png
@@ -140,7 +140,7 @@ First release of Film Camera for Android: around 300 film looks, live in the vie
 ## Checklist before uploading
 
 - [ ] Developer account set up. New **personal** accounts must run a closed test with at least 12 testers for 14 days before they can apply for production access.
-- [ ] App created in the Play Console with package `io.github.yahiaangelo.filmcamera`. The package name is permanent.
+- [ ] App created in the Play Console with package `it.bosiux.camera4u`. The package name is permanent.
 - [ ] Play App Signing enabled; upload key backed up (see README)
 - [ ] `versionCode` / `versionName` set (1 / 1.0); bump `versionCode` for every upload
 - [ ] `./gradlew :app:bundleRelease`, then upload `app-release.aab` to an internal testing track first

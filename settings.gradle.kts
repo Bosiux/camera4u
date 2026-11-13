@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Film Camera"
+rootProject.name = "camera4u"
 include(":app")

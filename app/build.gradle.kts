@@ -13,13 +13,13 @@ val signing = Properties().apply {
 fun signingValue(key: String, env: String): String? = signing.getProperty(key) ?: System.getenv(env)
 
 android {
-    namespace = "io.github.yahiaangelo.filmcamera"
+    namespace = "it.bosiux.camera4u"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "io.github.yahiaangelo.filmcamera"
+        applicationId = "it.bosiux.camera4u"
         // Android 10+: scoped storage lets us save to the gallery without a permission.
         minSdk = 29
         targetSdk = 37

@@ -2,10 +2,11 @@
   <img src="docs/images/icon.png" width="128" alt="Film Camera icon">
 </p>
 
-<h1 align="center">Film Camera for Android</h1>
+<h1 align="center">camera4u</h1>
 
 <p align="center">
-  A native Android camera that shoots through real film emulation LUTs, rendered live with OpenGL ES shaders.
+  A Pixel 8a camera with cinematic looks, skin-aware grading, cinema framing and real manual controls.
+  Fork of <a href="https://github.com/YahiaAngelo/FilmCamera-Android">Film Camera for Android</a> (MIT).
 </p>
 
 <p align="center">
@@ -40,7 +41,7 @@ Open the project in Android Studio and run the **app** configuration, or from th
 The emulator's virtual scene camera works, so you can develop the UI and the look without a device. Debug builds can also feed a still sample scene through the pipeline instead of the camera:
 
 ```sh
-adb shell am start -n io.github.yahiaangelo.filmcamera/.MainActivity --ez sampleScene true
+adb shell am start -n it.bosiux.camera4u/.MainActivity --ez sampleScene true
 ```
 
 The sample image lives in `src/debug`, so it's left out of release builds. [docs/PLAY_STORE.md](docs/PLAY_STORE.md) lists the other launch extras used for screenshots.
