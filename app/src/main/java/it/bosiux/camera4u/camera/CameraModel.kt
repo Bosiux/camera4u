@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.graphics.scale
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.LifecycleOwner
 import it.bosiux.camera4u.model.Aspect
 import it.bosiux.camera4u.model.Film
@@ -123,6 +124,20 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
         prefs.getString(KEY_ASPECT, null)?.let { id -> Aspect.entries.firstOrNull { it.name == id } } ?: Aspect.FourThree,
     )
         private set
+
+    var saveDng: Boolean by mutableStateOf(prefs.getBoolean(KEY_SAVE_DNG, true))
+        private set
+    /** False when the bound camera cannot deliver RAW and JPEG together. */
+    var dngSupported: Boolean by mutableStateOf(false)
+        private set
+
+    fun toggleDng() {
+        saveDng = !saveDng
+        prefs.edit { putBoolean(KEY_SAVE_DNG, saveDng) }
+        val provider = provider ?: return
+        val owner = lifecycleOwner ?: return
+        if (status == Status.Running) runCatching { bind(provider, owner, lensFacing) }
+    }
 
     fun cycleAspect() {
         aspect = aspect.next()
@@ -287,18 +302,28 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
             .build()
             .also { it.setSurfaceProvider(renderer.executor, renderer::provideSurface) }
 
-        // 12 MP keeps full-resolution GPU processing fast and memory friendly.
+        val wantsRaw = saveDng && ImageCapture.getImageCaptureCapabilities(provider.getCameraInfo(selector))
+            .supportedOutputFormats.contains(ImageCapture.OUTPUT_FORMAT_RAW_JPEG)
+        dngSupported = wantsRaw
         val capture = ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .setFlashMode(flashMode.cameraX)
-            .setResolutionSelector(
-                ResolutionSelector.Builder()
-                    .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
-                    .setResolutionStrategy(
-                        ResolutionStrategy(Size(4000, 3000), ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER),
+            .apply {
+                if (wantsRaw) {
+                    // RAW has a single sensor size; let CameraX pick matching streams.
+                    setOutputFormat(ImageCapture.OUTPUT_FORMAT_RAW_JPEG)
+                } else {
+                    // 12 MP keeps full-resolution GPU processing fast and memory friendly.
+                    setResolutionSelector(
+                        ResolutionSelector.Builder()
+                            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
+                            .setResolutionStrategy(
+                                ResolutionStrategy(Size(4000, 3000), ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER),
+                            )
+                            .build(),
                     )
-                    .build(),
-            )
+                }
+            }
             .build()
 
         provider.unbindAll()
@@ -399,7 +424,12 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
 
         scope.launch {
             try {
-                val (jpeg, rotation) = if (imageCapture != null) takePicture(imageCapture) else null to 0
+                val baseName = PhotoWriter.baseName(System.currentTimeMillis())
+                val (jpeg, rotation) = when {
+                    imageCapture == null -> null to 0
+                    dngSupported -> takePictureRawJpeg(imageCapture, baseName)
+                    else -> takePicture(imageCapture)
+                }
                 val result = withContext(Dispatchers.Default) {
                     val source = jpeg?.let(::decode) ?: sample!!.copy(Bitmap.Config.ARGB_8888, false)
                     val rendered = renderer.renderPhoto(source, rotation, mirrored)
@@ -410,7 +440,7 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
                         PhotoWriter.encode(processed, jpeg, file)
                         val thumbnail = processed.scale(240, max(1, 240 * processed.height / processed.width))
                         processed.recycle()
-                        val uri = withContext(Dispatchers.IO) { PhotoWriter.saveToGallery(context, file) }
+                        val uri = withContext(Dispatchers.IO) { PhotoWriter.saveToGallery(context, file, baseName) }
                         LastPhoto(thumbnail.asImageBitmap(), uri)
                     } finally {
                         file.delete()
@@ -454,6 +484,38 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
             )
         }
 
+    /**
+     * RAW + JPEG: CameraX writes the DNG straight into the gallery and the JPEG
+     * into a temp file we then grade. `onImageSaved` fires once per file.
+     */
+    private suspend fun takePictureRawJpeg(imageCapture: ImageCapture, baseName: String): Pair<ByteArray, Int> {
+        val jpegFile = File.createTempFile("raw_jpeg", ".jpg", context.cacheDir)
+        try {
+            suspendCancellableCoroutine<Unit> { continuation ->
+                var remaining = 2
+                imageCapture.takePicture(
+                    PhotoWriter.dngOutputOptions(context, baseName),
+                    ImageCapture.OutputFileOptions.Builder(jpegFile).build(),
+                    ContextCompat.getMainExecutor(context),
+                    object : ImageCapture.OnImageSavedCallback {
+                        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                            if (--remaining == 0 && continuation.isActive) continuation.resume(Unit)
+                        }
+
+                        override fun onError(exception: ImageCaptureException) {
+                            if (continuation.isActive) continuation.resumeWithException(exception)
+                        }
+                    },
+                )
+            }
+            val bytes = jpegFile.readBytes()
+            val rotation = ExifInterface(jpegFile).rotationDegrees
+            return bytes to rotation
+        } finally {
+            jpegFile.delete()
+        }
+    }
+
     /** Decodes the JPEG's raw pixels (ignoring EXIF rotation), within the GPU's texture limit. */
     private fun decode(jpeg: ByteArray): Bitmap {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
@@ -464,8 +526,13 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
             inSampleSize = sample
             inPreferredConfig = Bitmap.Config.ARGB_8888
         }
-        return BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size, options)
+        val bitmap = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size, options)
             ?: throw IllegalStateException("The camera did not return a photo.")
+        val longSide = max(bitmap.width, bitmap.height)
+        if (longSide <= 4000) return bitmap
+        // ponytail: scale instead of a second subsample; 12 MP is the ceiling the renderer was sized for.
+        val scale = 4000f / longSide
+        return bitmap.scale((bitmap.width * scale).roundToInt(), (bitmap.height * scale).roundToInt()).also { if (it !== bitmap) bitmap.recycle() }
     }
 
     fun release() {
@@ -509,6 +576,7 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
         const val KEY_SELECTED_FILM = "selectedFilm"
         const val KEY_SELECTED_LOOK = "selectedLook"
         const val KEY_ASPECT = "aspect"
+        const val KEY_SAVE_DNG = "saveDng"
         const val KEY_ADJUSTMENTS = "adjustments"
         const val MAX_ZOOM = 15f
     }

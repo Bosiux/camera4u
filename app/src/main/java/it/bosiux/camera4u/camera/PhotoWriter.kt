@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.camera.core.ImageCapture
 import androidx.exifinterface.media.ExifInterface
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -55,13 +56,26 @@ object PhotoWriter {
         exif.saveAttributes()
     }
 
-    /** Adds an encoded JPEG to the gallery under Pictures/Film Camera. */
-    fun saveToGallery(context: Context, file: File): Uri {
+    fun baseName(now: Long): String = "C4U_" + SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.US).format(Date(now))
+
+    /** Where CameraX writes the DNG: the same album and base name as the JPEG. */
+    fun dngOutputOptions(context: Context, baseName: String): ImageCapture.OutputFileOptions {
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "$baseName.dng")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/x-adobe-dng")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$ALBUM")
+        }
+        return ImageCapture.OutputFileOptions.Builder(
+            context.contentResolver, MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), values,
+        ).build()
+    }
+
+    /** Adds an encoded JPEG to the gallery under Pictures/camera4u. */
+    fun saveToGallery(context: Context, file: File, baseName: String): Uri {
         val resolver = context.contentResolver
         val now = System.currentTimeMillis()
-        val name = "C4U_" + SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.US).format(Date(now)) + ".jpg"
         val values = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, name)
+            put(MediaStore.Images.Media.DISPLAY_NAME, "$baseName.jpg")
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
             put(MediaStore.Images.Media.DATE_TAKEN, now)
             put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$ALBUM")

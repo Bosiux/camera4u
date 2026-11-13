@@ -5,6 +5,7 @@ import it.bosiux.camera4u.model.FilmAdjustments
 import it.bosiux.camera4u.rendering.UvTransform
 import it.bosiux.camera4u.ui.camera.zoomLabel
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FilmAdjustmentsTest {
@@ -69,5 +70,15 @@ class UvTransformTest {
         // Mirror first, then rotate: the upright top-left becomes the top-right, then (0, 0).
         val m = UvTransform.concat(UvTransform.uprightToSource(90), UvTransform.mirrorX())
         assertEquals(0f to 0f, map(m, 0f, 0f))
+    }
+}
+
+class PhotoWriterTest {
+    @Test
+    fun baseNameIsStableAndPrefixed() {
+        val name = it.bosiux.camera4u.camera.PhotoWriter.baseName(0L)
+        assertTrue(name.startsWith("C4U_"))
+        assertEquals(name, it.bosiux.camera4u.camera.PhotoWriter.baseName(0L))
+        assertEquals("C4U_".length + "yyyyMMdd_HHmmss_SSS".length, name.length)
     }
 }

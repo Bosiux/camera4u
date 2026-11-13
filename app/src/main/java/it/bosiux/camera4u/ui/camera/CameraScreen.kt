@@ -244,6 +244,9 @@ private fun TopBar(
         }
         ControlButton(Icons.Outlined.Grid3x3, "Grid", isOn = camera.showsGrid) { camera.showsGrid = !camera.showsGrid }
         AspectButton(camera.aspect.label, onClick = camera::cycleAspect)
+        if (camera.dngSupported || camera.saveDng) {
+            AspectButton(if (camera.saveDng) "RAW" else "JPG", onClick = camera::toggleDng)
+        }
         Spacer(Modifier.weight(1f))
         ControlButton(Icons.Outlined.Tune, "Adjustments", isOn = adjustmentsModified, onClick = onAdjustments)
         ControlButton(Icons.Outlined.PhotoLibrary, "Film Library", isOn = false, onClick = onLibrary)
