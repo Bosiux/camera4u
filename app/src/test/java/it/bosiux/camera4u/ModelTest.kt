@@ -15,6 +15,14 @@ class FilmAdjustmentsTest {
     }
 
     @Test
+    fun skinProtectRoundTripsAndDefaultsToHalf() {
+        assertEquals(0.5f, FilmAdjustments.Default.skinProtect)
+        val value = FilmAdjustments(skinProtect = 0.9f)
+        assertEquals(0.9f, FilmAdjustments.fromJson(value.toJson()).skinProtect)
+        assertEquals(1f, FilmAdjustments.fromJson("""{"skin": 7}""").skinProtect)
+    }
+
+    @Test
     fun missingAndOutOfRangeValuesAreSanitized() {
         val value = FilmAdjustments.fromJson("""{"exposure": 9, "tint": -0.5}""")
         assertEquals(2f, value.exposure)

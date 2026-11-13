@@ -209,6 +209,7 @@ internal class FilmRenderer {
         program.set("uTemperature", a.temperature)
         program.set("uTint", a.tint)
         program.set("uFade", a.fade)
+        program.set("uSkinProtect", a.skinProtect)
         program.set("uLutIntensity", if (this.lut != null) a.lutIntensity else 0f)
         program.set("uLutSize", lut.size.toFloat())
         program.set("uLutDomainMin", lut.domainMin)

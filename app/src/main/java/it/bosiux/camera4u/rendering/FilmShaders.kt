@@ -44,6 +44,7 @@ uniform highp sampler3D uLut;
 uniform mat4 uUvTransform;
 uniform float uExposure, uContrast, uHighlights, uShadows, uSaturation, uTemperature, uTint, uFade;
 uniform float uLutIntensity, uLutSize;
+uniform float uSkinProtect;
 uniform vec3 uLutDomainMin, uLutDomainMax;
 
 in vec2 vUv;
@@ -58,6 +59,26 @@ vec3 linearToSrgb(vec3 c) {
     return mix(1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, c * 12.92, lessThanEqual(c, vec3(0.0031308)));
 }
 
+// Hue in 0..1 (red = 0) and saturation, for the skin mask.
+vec2 hueSat(vec3 c) {
+    float mx = max(c.r, max(c.g, c.b));
+    float mn = min(c.r, min(c.g, c.b));
+    float d = mx - mn;
+    float s = mx > 1e-4 ? d / mx : 0.0;
+    if (d < 1e-4) return vec2(0.0, s);
+    float h = (mx == c.r) ? mod((c.g - c.b) / d, 6.0) : (mx == c.g) ? (c.b - c.r) / d + 2.0 : (c.r - c.g) / d + 4.0;
+    return vec2(h / 6.0, s);
+}
+
+// 1 on skin-like colours (hue ~10..40 degrees, medium saturation), 0 elsewhere.
+float skinMask(vec3 c) {
+    vec2 hs = hueSat(c);
+    float hue = smoothstep(0.025, 0.045, hs.x) * (1.0 - smoothstep(0.09, 0.125, hs.x));
+    float sat = smoothstep(0.1, 0.22, hs.y) * (1.0 - smoothstep(0.7, 0.9, hs.y));
+    float val = smoothstep(0.12, 0.3, max(c.r, max(c.g, c.b)));
+    return hue * sat * val;
+}
+
 void main() {
     vec2 st = (uUvTransform * vec4(vUv, 0.0, 1.0)).xy;
     vec3 c = texture(uSource, st).rgb;
@@ -67,6 +88,7 @@ void main() {
     vec3 lin = srgbToLinear(c) * exp2(uExposure);
     lin *= vec3(1.0 + 0.22 * uTemperature, 1.0 - 0.12 * uTint, 1.0 - 0.22 * uTemperature);
     c = clamp(linearToSrgb(lin), 0.0, 1.0);
+    vec3 pre = c;
 
     // Film LUT (trilinear sampling of the 3D texture, texel-center corrected).
     if (uLutIntensity > 0.0) {
@@ -90,6 +112,13 @@ void main() {
 
     // Saturation.
     c = mix(vec3(luma(c)), c, 1.0 + uSaturation);
+
+    // Skin protection: keep the look's luminance but restore the original hue and saturation on skin.
+    if (uSkinProtect > 0.0) {
+        float m = skinMask(pre) * uSkinProtect;
+        vec3 restored = pre * (luma(c) / max(luma(pre), 1e-4));
+        c = mix(c, clamp(restored, 0.0, 1.0), m);
+    }
 
     // Fade: lifted blacks and slightly muted whites, like faded prints.
     c = mix(c, c * 0.86 + 0.1, uFade);

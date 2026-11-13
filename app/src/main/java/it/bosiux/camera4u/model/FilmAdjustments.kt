@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Exposure
+import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.Flare
 import androidx.compose.material.icons.outlined.Gradient
 import androidx.compose.material.icons.outlined.Grain
@@ -40,6 +41,7 @@ data class FilmAdjustments(
     val glow: Float = 0f,         // 0..1
     val halation: Float = 0f,     // 0..1
     val vignette: Float = 0.2f,   // 0..1
+    val skinProtect: Float = 0.5f, // 0..1, keeps skin hue and saturation through the look
 ) {
     fun toJson(): String = JSONObject().apply {
         AdjustmentControl.all.forEach { put(it.id, it.get(this@FilmAdjustments).toDouble()) }
@@ -102,6 +104,8 @@ class AdjustmentControl(
                 { it.temperature }, { a, v -> a.copy(temperature = v) }),
             AdjustmentControl("tint", "Tint", Icons.Outlined.Colorize, Group.Color, -1f..1f,
                 { it.tint }, { a, v -> a.copy(tint = v) }),
+            AdjustmentControl("skin", "Skin", Icons.Outlined.Face, Group.Color, 0f..1f,
+                { it.skinProtect }, { a, v -> a.copy(skinProtect = v) }),
             AdjustmentControl("grain", "Grain", Icons.Outlined.Grain, Group.Effects, 0f..1f,
                 { it.grain }, { a, v -> a.copy(grain = v) }),
             AdjustmentControl("grainSize", "Grain Size", Icons.Outlined.BlurOn, Group.Effects, 0f..1f,
