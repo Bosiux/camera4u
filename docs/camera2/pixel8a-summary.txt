@@ -1,0 +1,170 @@
+
+# == Camera HAL device device@1.1/internal/0 (v1.4) static information: ==
+  sensor.maxAnalogSensitivity: [615 ]
+
+## characteristics block 1
+  info.supportedHardwareLevel: [FULL ]
+  sensor.info.physicalSize: [7.39839983 5.55520010 ]
+  control.awbAvailableModes: [0 1 2 3 4 5 6 7 8 ]
+  sensor.info.colorFilterArrangement: [RGGB ]
+  tonemap.availableToneMapModes: [0 1 2 ]
+  flash.info.available: [TRUE ]
+  lens.info.availableOpticalStabilization: [0 1 ]
+  control.aeAvailableModes: [0 1 2 3 ]
+  sensor.info.whiteLevel: [1023 ]
+  logicalMultiCamera.physicalIds: [2 3 4 ]
+  request.availableCapabilities: [BACKWARD_COMPATIBLE MANUAL_SENSOR READ_SENSOR_SETTINGS MANUAL_POST_PROCESSING BURST_CAPTURE STREAM_USE_CASE RAW CONSTRAINED_HIGH_SPEED_VIDEO LOGICAL_MULTI_CAMERA ]
+  control.aeCompensationStep: [(1 / 6) ]
+  lens.info.availableApertures: [1.88999999 ]
+  control.aeAvailableTargetFpsRanges: [15 15 15 24 ] [24 24 15 30 ] [24 30 30 30 ] [15 60 60 60 ]
+  sensor.info.sensitivityRange: [50 9846 ]
+  control.afAvailableModes: [0 1 2 3 4 5 ]
+  lens.info.minimumFocusDistance: [10.20408154 ]
+  lens.facing: [BACK ]
+  lens.info.availableFocalLengths: [5.42999983 ]
+  control.aeCompensationRange: [-24 24 ]
+  sensor.info.activeArraySize: [0 0 4624 3472 ]
+  tonemap.maxCurvePoints: [65 ]
+  sensor.info.exposureTimeRange: [59896 16000000015 ]
+  control.zoomRatioRange: [0.53049380 8.00000000 ]
+  lens.info.focusDistanceCalibration: [APPROXIMATE ]
+  stream RAW10: 3 sizes, max 4624x3472, min 2312x1736
+  stream RAW_SENSOR: 3 sizes, max 4624x3472, min 2312x1736
+  stream YUV_420_888: 32 sizes, max 4624x3472, min 176x144
+  stream PRIVATE: 32 sizes, max 4624x3472, min 176x144
+  stream FORMAT_33: 15 sizes, max 4624x3472, min 1920x1080
+  request.availableDynamicRangeProfilesMap: 
+
+## characteristics block 2
+  info.supportedHardwareLevel: [FULL ]
+  sensor.maxAnalogSensitivity: [615 ]
+  sensor.info.physicalSize: [7.39839983 5.55520010 ]
+  control.awbAvailableModes: [0 1 2 3 4 5 6 7 8 ]
+  tonemap.availableToneMapModes: [0 1 2 ]
+  sensor.info.colorFilterArrangement: [RGGB ]
+  flash.info.available: [TRUE ]
+  control.aeAvailableModes: [0 1 2 3 ]
+  lens.info.availableOpticalStabilization: [0 1 ]
+  sensor.info.whiteLevel: [1023 ]
+  control.aeCompensationStep: [(1 / 6) ]
+  lens.info.availableApertures: [1.88999999 ]
+  request.availableCapabilities: [BACKWARD_COMPATIBLE MANUAL_SENSOR READ_SENSOR_SETTINGS MANUAL_POST_PROCESSING BURST_CAPTURE STREAM_USE_CASE RAW CONSTRAINED_HIGH_SPEED_VIDEO ]
+  control.aeAvailableTargetFpsRanges: [15 15 15 24 ] [24 24 15 30 ] [24 30 30 30 ] [15 60 60 60 ]
+  sensor.info.sensitivityRange: [50 9846 ]
+  control.afAvailableModes: [0 1 2 3 4 5 ]
+  lens.info.minimumFocusDistance: [10.20408154 ]
+  lens.info.availableFocalLengths: [5.42999983 ]
+  lens.facing: [BACK ]
+  control.aeCompensationRange: [-24 24 ]
+  tonemap.maxCurvePoints: [65 ]
+  sensor.info.activeArraySize: [0 0 4624 3472 ]
+  request.availableDynamicRangeProfilesMap: 
+  sensor.info.exposureTimeRange: [59896 16000000015 ]
+  stream RAW10: 3 sizes, max 4624x3472, min 2312x1736
+  stream RAW_SENSOR: 3 sizes, max 4624x3472, min 2312x1736
+  stream YUV_420_888: 32 sizes, max 4624x3472, min 176x144
+  stream PRIVATE: 32 sizes, max 4624x3472, min 176x144
+  stream FORMAT_33: 32 sizes, max 4624x3472, min 176x144
+  control.zoomRatioRange: [1.00000000 8.00000000 ]
+  lens.info.focusDistanceCalibration: [APPROXIMATE ]
+  sensor.maxAnalogSensitivity: [788 ]
+
+## characteristics block 3
+  info.supportedHardwareLevel: [FULL ]
+  sensor.info.physicalSize: [4.71295977 3.49440002 ]
+  control.awbAvailableModes: [0 1 2 3 4 5 6 7 8 ]
+  sensor.info.colorFilterArrangement: [RGGB ]
+  tonemap.availableToneMapModes: [0 1 2 ]
+  flash.info.available: [TRUE ]
+  sensor.info.whiteLevel: [1023 ]
+  lens.info.availableOpticalStabilization: [0 ]
+  control.aeAvailableModes: [0 1 2 3 ]
+  request.availableCapabilities: [BACKWARD_COMPATIBLE MANUAL_SENSOR READ_SENSOR_SETTINGS MANUAL_POST_PROCESSING BURST_CAPTURE STREAM_USE_CASE RAW CONSTRAINED_HIGH_SPEED_VIDEO ]
+  control.aeCompensationStep: [(1 / 6) ]
+  lens.info.availableApertures: [2.20000005 ]
+  control.aeAvailableTargetFpsRanges: [15 15 15 24 ] [24 24 15 30 ] [24 30 30 30 ] [15 60 60 60 ]
+  sensor.info.sensitivityRange: [49 4729 ]
+  control.afAvailableModes: [0 ]
+  lens.info.minimumFocusDistance: [0.00000000 ]
+  lens.facing: [BACK ]
+  lens.info.availableFocalLengths: [1.83500004 ]
+  control.aeCompensationRange: [-24 24 ]
+  sensor.info.activeArraySize: [0 0 4208 3120 ]
+  tonemap.maxCurvePoints: [65 ]
+  control.zoomRatioRange: [1.00000000 8.00000000 ]
+  lens.info.focusDistanceCalibration: [APPROXIMATE ]
+  stream RAW10: 2 sizes, max 4208x3120, min 2104x1560
+  stream RAW_SENSOR: 2 sizes, max 4208x3120, min 2104x1560
+  stream YUV_420_888: 32 sizes, max 4208x3120, min 176x144
+  stream PRIVATE: 32 sizes, max 4208x3120, min 176x144
+  stream FORMAT_33: 32 sizes, max 4208x3120, min 176x144
+  sensor.info.exposureTimeRange: [12428 16000001544 ]
+  request.availableDynamicRangeProfilesMap: 
+
+## characteristics block 4
+  info.supportedHardwareLevel: [FULL ]
+  sensor.maxAnalogSensitivity: [615 ]
+  sensor.info.physicalSize: [3.69919991 2.77760005 ]
+  control.awbAvailableModes: [0 1 2 3 4 5 6 7 8 ]
+  flash.info.available: [TRUE ]
+  sensor.info.colorFilterArrangement: [RGGB ]
+  tonemap.availableToneMapModes: [0 1 2 ]
+  sensor.info.whiteLevel: [1023 ]
+  lens.info.availableOpticalStabilization: [0 1 ]
+  control.aeAvailableModes: [0 1 2 3 ]
+  control.aeCompensationStep: [(1 / 6) ]
+  lens.info.availableApertures: [1.88999999 ]
+  request.availableCapabilities: [BACKWARD_COMPATIBLE MANUAL_SENSOR READ_SENSOR_SETTINGS MANUAL_POST_PROCESSING BURST_CAPTURE STREAM_USE_CASE RAW CONSTRAINED_HIGH_SPEED_VIDEO ]
+  control.aeAvailableTargetFpsRanges: [15 15 15 24 ] [24 24 15 30 ] [24 30 30 30 ] [15 60 60 60 ]
+  sensor.info.sensitivityRange: [38 9846 ]
+  control.afAvailableModes: [0 1 2 3 4 5 ]
+  lens.info.minimumFocusDistance: [10.20408154 ]
+  lens.info.availableFocalLengths: [5.42999983 ]
+  lens.facing: [BACK ]
+  control.aeCompensationRange: [-24 24 ]
+  tonemap.maxCurvePoints: [65 ]
+  sensor.info.activeArraySize: [0 0 4624 3472 ]
+  request.availableDynamicRangeProfilesMap: 
+  control.zoomRatioRange: [1.00000000 8.00000000 ]
+  lens.info.focusDistanceCalibration: [APPROXIMATE ]
+  sensor.info.exposureTimeRange: [84739 16000003573 ]
+  stream RAW10: 1 sizes, max 4624x3472, min 4624x3472
+  stream RAW_SENSOR: 1 sizes, max 4624x3472, min 4624x3472
+  stream YUV_420_888: 32 sizes, max 4624x3472, min 176x144
+  stream PRIVATE: 32 sizes, max 4624x3472, min 176x144
+  stream FORMAT_33: 32 sizes, max 4624x3472, min 176x144
+
+# == Camera HAL device device@1.1/internal/1 (v1.4) static information: ==
+  lens.info.availableOpticalStabilization: [0 ]
+  control.aeAvailableModes: [0 1 ]
+  sensor.info.activeArraySize: [0 0 4208 3072 ]
+  sensor.info.whiteLevel: [1023 ]
+  tonemap.maxCurvePoints: [65 ]
+  control.aeCompensationStep: [(1 / 6) ]
+  lens.info.availableApertures: [2.20000005 ]
+  sensor.info.exposureTimeRange: [12428 1000007525 ]
+  request.availableDynamicRangeProfilesMap: 
+  request.availableCapabilities: [BACKWARD_COMPATIBLE MANUAL_SENSOR READ_SENSOR_SETTINGS MANUAL_POST_PROCESSING BURST_CAPTURE STREAM_USE_CASE RAW SECURE_IMAGE_DATA ]
+  control.zoomRatioRange: [1.00000000 10.00000000 ]
+  lens.info.focusDistanceCalibration: [APPROXIMATE ]
+  stream RAW10: 2 sizes, max 4208x3072, min 2104x1536
+  stream RAW_SENSOR: 2 sizes, max 4208x3072, min 2104x1536
+  stream YUV_420_888: 32 sizes, max 4208x3072, min 176x144
+  stream PRIVATE: 32 sizes, max 4208x3072, min 176x144
+  stream FORMAT_33: 15 sizes, max 4208x3072, min 1920x1080
+  lens.info.availableFocalLengths: [2.74000001 ]
+  lens.facing: [FRONT ]
+  control.aeCompensationRange: [-24 24 ]
+  flash.info.available: [FALSE ]
+  sensor.info.colorFilterArrangement: [BGGR ]
+  tonemap.availableToneMapModes: [0 1 2 ]
+  sensor.info.physicalSize: [4.71295977 3.44063997 ]
+  lens.info.minimumFocusDistance: [0.00000000 ]
+  control.awbAvailableModes: [0 1 2 3 4 5 6 7 8 ]
+
+## characteristics block 1
+  info.supportedHardwareLevel: [FULL ]
+  control.aeAvailableTargetFpsRanges: [15 15 15 24 ] [24 24 15 30 ] [24 30 30 30 ] [15 60 60 60 ]
+  sensor.info.sensitivityRange: [48 6095 ]
+  sensor.maxAnalogSensitivity: [761 ]
+  control.afAvailableModes: [0 ]
