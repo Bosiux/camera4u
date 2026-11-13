@@ -55,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -70,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import it.bosiux.camera4u.camera.CameraModel
+import it.bosiux.camera4u.model.Aspect
 import it.bosiux.camera4u.rendering.FilmGlThread
 import java.util.Locale
 import kotlin.math.abs
@@ -128,6 +130,7 @@ fun Viewfinder(camera: CameraModel, filmName: String, onFilmTap: () -> Unit, mod
             )
 
             if (camera.showsGrid) GridOverlay()
+            if (camera.aspect != Aspect.FourThree) AspectMatte(camera.aspect.shortSideFraction)
 
             focusPoint?.let { point ->
                 FocusIndicator(
@@ -181,6 +184,17 @@ private fun CameraPreview(renderer: FilmGlThread, modifier: Modifier = Modifier)
             }
         },
     )
+}
+
+/** Darkens the sides that the chosen framing will crop away. The viewfinder is portrait, so the short side is its width. */
+@Composable
+private fun AspectMatte(shortSideFraction: Float) {
+    Canvas(Modifier.fillMaxSize()) {
+        val band = size.width * (1f - shortSideFraction) / 2f
+        val color = Color.Black.copy(alpha = 0.7f)
+        drawRect(color, Offset.Zero, Size(band, size.height))
+        drawRect(color, Offset(size.width - band, 0f), Size(band, size.height))
+    }
 }
 
 @Composable

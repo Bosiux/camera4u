@@ -72,6 +72,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -239,9 +242,24 @@ private fun TopBar(
                 onClick = camera::cycleFlash)
         }
         ControlButton(Icons.Outlined.Grid3x3, "Grid", isOn = camera.showsGrid) { camera.showsGrid = !camera.showsGrid }
+        AspectButton(camera.aspect.label, onClick = camera::cycleAspect)
         Spacer(Modifier.weight(1f))
         ControlButton(Icons.Outlined.Tune, "Adjustments", isOn = adjustmentsModified, onClick = onAdjustments)
         ControlButton(Icons.Outlined.PhotoLibrary, "Film Library", isOn = false, onClick = onLibrary)
+    }
+}
+
+@Composable
+private fun AspectButton(label: String, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = CircleShape,
+        color = Color.White.copy(alpha = 0.14f),
+        modifier = Modifier.height(44.dp).semantics { contentDescription = "Aspect ratio $label" },
+    ) {
+        Box(Modifier.padding(horizontal = 14.dp), contentAlignment = Alignment.Center) {
+            Text(label, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+        }
     }
 }
 

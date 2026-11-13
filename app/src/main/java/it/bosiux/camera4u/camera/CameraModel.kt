@@ -37,6 +37,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.graphics.scale
 import androidx.lifecycle.LifecycleOwner
+import it.bosiux.camera4u.model.Aspect
 import it.bosiux.camera4u.model.Film
 import it.bosiux.camera4u.model.FilmAdjustments
 import it.bosiux.camera4u.model.Look
@@ -117,6 +118,16 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
 
     var adjustments: FilmAdjustments by mutableStateOf(savedAdjustments())
         private set
+
+    var aspect: Aspect by mutableStateOf(
+        prefs.getString(KEY_ASPECT, null)?.let { id -> Aspect.entries.firstOrNull { it.name == id } } ?: Aspect.FourThree,
+    )
+        private set
+
+    fun cycleAspect() {
+        aspect = aspect.next()
+        prefs.edit { putString(KEY_ASPECT, aspect.name) }
+    }
 
     val renderer = FilmGlThread()
 
@@ -379,7 +390,8 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
                 val (jpeg, rotation) = if (imageCapture != null) takePicture(imageCapture) else null to 0
                 val result = withContext(Dispatchers.Default) {
                     val source = jpeg?.let(::decode) ?: sample!!.copy(Bitmap.Config.ARGB_8888, false)
-                    val processed = renderer.renderPhoto(source, rotation, mirrored)
+                    val rendered = renderer.renderPhoto(source, rotation, mirrored)
+                    val processed = cropToAspect(rendered, aspect)
                     source.recycle()
                     val file = File.createTempFile("capture", ".jpg", context.cacheDir)
                     try {
@@ -400,6 +412,13 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
                 isCapturing = false
             }
         }
+    }
+
+    /** Centred crop to the chosen framing; 4:3 returns the bitmap untouched. */
+    private fun cropToAspect(bitmap: Bitmap, aspect: Aspect): Bitmap {
+        val rect = aspect.cropRect(bitmap.width, bitmap.height)
+        if (rect.width == bitmap.width && rect.height == bitmap.height) return bitmap
+        return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width, rect.height).also { bitmap.recycle() }
     }
 
     /** Returns the JPEG and the clockwise rotation that makes it upright. */
@@ -477,6 +496,7 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
     private companion object {
         const val KEY_SELECTED_FILM = "selectedFilm"
         const val KEY_SELECTED_LOOK = "selectedLook"
+        const val KEY_ASPECT = "aspect"
         const val KEY_ADJUSTMENTS = "adjustments"
         const val MAX_ZOOM = 15f
     }
