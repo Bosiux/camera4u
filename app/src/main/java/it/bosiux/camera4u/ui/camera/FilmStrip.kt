@@ -103,7 +103,7 @@ fun FilmStrip(viewModel: FilmCameraViewModel, onBrowse: () -> Unit) {
 }
 
 @Composable
-private fun StripItem(
+internal fun StripItem(
     title: String,
     isSelected: Boolean,
     onClick: () -> Unit,

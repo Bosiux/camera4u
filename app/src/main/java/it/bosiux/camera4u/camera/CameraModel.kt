@@ -39,6 +39,7 @@ import androidx.core.graphics.scale
 import androidx.lifecycle.LifecycleOwner
 import it.bosiux.camera4u.model.Film
 import it.bosiux.camera4u.model.FilmAdjustments
+import it.bosiux.camera4u.model.Look
 import it.bosiux.camera4u.rendering.CubeLut
 import it.bosiux.camera4u.rendering.FilmGlThread
 import java.io.File
@@ -110,6 +111,10 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
     var selectedFilmId: String? by mutableStateOf(prefs.getString(KEY_SELECTED_FILM, null))
         private set
 
+    /** The curated look in use; `null` once the user picks a film or edits adjustments by hand. */
+    var selectedLookId: String? by mutableStateOf(prefs.getString(KEY_SELECTED_LOOK, null))
+        private set
+
     var adjustments: FilmAdjustments by mutableStateOf(savedAdjustments())
         private set
 
@@ -156,6 +161,7 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
 
     /** Loads a film's LUT into the renderer. Pass `null` for no film. */
     fun selectFilm(film: Film?, openLut: (() -> String)?) {
+        if (film?.id != selectedFilmId) { selectedLookId = null; prefs.edit { remove(KEY_SELECTED_LOOK) } }
         selectedFilmId = film?.id
         prefs.edit { putString(KEY_SELECTED_FILM, film?.id) }
         lutJob?.cancel()
@@ -171,6 +177,28 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
             } catch (e: Exception) {
                 if (e is kotlinx.coroutines.CancellationException) throw e
                 captureError = "Couldn't load ${film.displayName}. ${e.message.orEmpty()}"
+            }
+        }
+    }
+
+    /** Applies a look: its LUT and its adjustments together. */
+    fun selectLook(look: Look, openLut: (() -> String)?) {
+        selectFilm(null, null)
+        selectedLookId = look.id
+        prefs.edit { putString(KEY_SELECTED_LOOK, look.id) }
+        updateAdjustments(look.adjustments)
+        if (look.lutId != null && openLut != null) {
+            lutJob = scope.launch {
+                try {
+                    val cube = withContext(Dispatchers.Default) { CubeLut.parse(openLut()) }
+                    if (selectedLookId == look.id) {
+                        selectedFilmId = look.lutId
+                        renderer.setLut(cube)
+                    }
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    captureError = "Couldn't load ${look.name}. ${e.message.orEmpty()}"
+                }
             }
         }
     }
@@ -448,6 +476,7 @@ class CameraModel(private val context: Context, private val scope: CoroutineScop
 
     private companion object {
         const val KEY_SELECTED_FILM = "selectedFilm"
+        const val KEY_SELECTED_LOOK = "selectedLook"
         const val KEY_ADJUSTMENTS = "adjustments"
         const val MAX_ZOOM = 15f
     }

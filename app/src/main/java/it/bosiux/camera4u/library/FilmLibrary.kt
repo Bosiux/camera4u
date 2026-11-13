@@ -44,6 +44,7 @@ class FilmLibrary(private val context: Context, private val scope: CoroutineScop
             "luts/fujixtransiii/fuji_xtrans_iii_classic_chrome.cube",
             "luts/colorslide/fuji_velvia_50.cube",
             "luts/print/kodak_2383_cuspclip.cube",
+            "luts/print/fuji_3513_cuspclip.cube",
             "luts/bw/kodak_tri-x_400.cube",
             "luts/bw/ilford_hp_5_plus_400.cube",
         )

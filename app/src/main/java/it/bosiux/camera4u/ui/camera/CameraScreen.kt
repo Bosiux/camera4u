@@ -79,6 +79,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import it.bosiux.camera4u.FilmCameraViewModel
 import it.bosiux.camera4u.camera.CameraModel
 import it.bosiux.camera4u.model.FilmAdjustments
+import it.bosiux.camera4u.model.Looks
 import it.bosiux.camera4u.ui.adjustments.AdjustmentsSheet
 import it.bosiux.camera4u.ui.library.FilmLibrarySheet
 import it.bosiux.camera4u.ui.theme.FilmCameraTheme
@@ -177,14 +178,15 @@ fun CameraScreen(viewModel: FilmCameraViewModel, initialSheet: String? = null) {
                 )
                 Viewfinder(
                     camera = camera,
-                    filmName = library.film(camera.selectedFilmId)?.displayName ?: "Original",
+                    filmName = Looks.byId(camera.selectedLookId)?.name
+                        ?: library.film(camera.selectedFilmId)?.displayName ?: "Original",
                     onFilmTap = { showsLibrary = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
                         .padding(horizontal = 12.dp),
                 )
-                FilmStrip(viewModel = viewModel, onBrowse = { showsLibrary = true })
+                LookStrip(viewModel = viewModel, onBrowse = { showsLibrary = true })
                 BottomBar(camera = camera, modifier = Modifier.padding(horizontal = 28.dp).padding(bottom = 8.dp))
             }
         }

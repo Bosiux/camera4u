@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import it.bosiux.camera4u.camera.CameraModel
 import it.bosiux.camera4u.library.FilmLibrary
 import it.bosiux.camera4u.model.Film
+import it.bosiux.camera4u.model.Look
+import it.bosiux.camera4u.model.Looks
 import kotlinx.coroutines.launch
 
 /** Owns the camera and film library for the lifetime of the app's UI. */
@@ -14,8 +16,14 @@ class FilmCameraViewModel(application: Application) : AndroidViewModel(applicati
     val camera = CameraModel(application, viewModelScope)
 
     init {
-        select(library.film(camera.selectedFilmId))
+        val look = Looks.byId(camera.selectedLookId)
+        if (look != null) selectLook(look) else select(library.film(camera.selectedFilmId))
         viewModelScope.launch { library.refreshCatalog() }
+    }
+
+    fun selectLook(look: Look) {
+        val film = look.lutId?.let(library::film)
+        camera.selectLook(look, film?.let(library::lutReader))
     }
 
     /** Loads a film into the camera, or no film. Films that aren't on device fall back to none. */
